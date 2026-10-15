@@ -6,6 +6,12 @@ on:
   pull_request:
     branches:
       - master
+    # This check packages the reusable editor. Katata's application build is
+    # validated separately by katata.yml.
+    paths:
+      - "packages/**"
+      - "scripts/buildPackage.js"
+      - "packages/excalidraw/.size-limit*"
 jobs:
   size:
     runs-on: ubuntu-latest
