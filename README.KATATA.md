@@ -34,7 +34,7 @@ yarn katata:dev
 VITE_APP_KATATA=true yarn --cwd excalidraw-app start
 ```
 
-Abra `http://localhost:3000`. O Vite encaminha `/api` para a porta 3001. As tabelas são criadas na inicialização, com lock de migração no PostgreSQL. Crie a primeira conta no terminal; a senha é solicitada sem exibir o que foi digitado:
+Abra `http://localhost:3000`. O Vite encaminha `/api` para a porta 3001. As tabelas são criadas na inicialização, com lock de migração no PostgreSQL. O servidor aguarda o banco aceitar conexões antes de migrar e atender requisições. Crie a primeira conta no terminal; a senha é solicitada sem exibir o que foi digitado:
 
 ```sh
 cd katata-server

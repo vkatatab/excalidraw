@@ -13,7 +13,7 @@ services:
       - "3001"
     depends_on:
       postgres:
-        condition: service_healthy
+        condition: service_started
     mem_limit: 768m
     cpus: 1
   postgres:
