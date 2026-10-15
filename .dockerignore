@@ -17,3 +17,6 @@
 **/build
 **/dist
 **/node_modules
+
+!katata-server/
+katata-server/.env

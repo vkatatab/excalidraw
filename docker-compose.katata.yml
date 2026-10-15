@@ -1,0 +1,36 @@
+services:
+  draw:
+    build:
+      context: .
+      dockerfile: Dockerfile.katata
+    restart: unless-stopped
+    environment:
+      APP_URL: ${APP_URL:-https://draw.katata.click}
+      DATABASE_URL: postgresql://katata:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/katata_draw
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?Set BETTER_AUTH_SECRET}
+      NODE_ENV: production
+    expose:
+      - "3001"
+    depends_on:
+      postgres:
+        condition: service_started
+    mem_limit: 768m
+    cpus: 1
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: katata
+      POSTGRES_DB: katata_draw
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - katata_draw_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U katata -d katata_draw"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    mem_limit: 512m
+    cpus: 0.5
+volumes:
+  katata_draw_postgres:

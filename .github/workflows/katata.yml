@@ -1,0 +1,43 @@
+name: Katata Draw
+on:
+  push:
+    branches: [feature/katata-auth-boards]
+  pull_request:
+    paths:
+      - "katata-server/**"
+      - "excalidraw-app/katata/**"
+      - "excalidraw-app/index.tsx"
+      - "excalidraw-app/vite.config.mts"
+      - "yarn.lock"
+      - "Dockerfile.katata"
+      - ".github/workflows/katata.yml"
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_PASSWORD: local-ci-only
+          POSTGRES_DB: katata_draw
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres -d katata_draw" --health-interval 5s --health-timeout 5s --health-retries 10
+
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: yarn
+      - run: yarn install --frozen-lockfile --non-interactive
+      - run: yarn katata:test
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:local-ci-only@127.0.0.1:5432/katata_draw
+      - run: yarn vitest run excalidraw-app/katata/autosave.test.ts
+      - run: yarn tsc --pretty false
+      - run: yarn eslint --max-warnings=0 excalidraw-app/katata/*.ts excalidraw-app/katata/*.tsx excalidraw-app/index.tsx
+      - run: yarn katata:build

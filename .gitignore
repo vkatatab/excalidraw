@@ -27,3 +27,6 @@ dev-dist
 html
 meta*.json
 .claude
+
+# Katata self-hosted secrets
+katata-server/.env
