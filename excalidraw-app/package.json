@@ -37,7 +37,8 @@
     "react-dom": "19.0.0",
     "socket.io-client": "4.7.2",
     "uqr": "0.1.2",
-    "vite-plugin-html": "3.2.2"
+    "vite-plugin-html": "3.2.2",
+    "better-auth": "1.7.10"
   },
   "prettier": "@excalidraw/prettier-config",
   "scripts": {
@@ -49,7 +50,8 @@
     "start": "yarn && vite",
     "start:production": "yarn build && yarn serve",
     "serve": "npx http-server build -a localhost -p 5001 -o",
-    "build:preview": "yarn build && vite preview --port 5000"
+    "build:preview": "yarn build && vite preview --port 5000",
+    "build:katata": "cross-env VITE_APP_KATATA=true VITE_APP_DISABLE_SENTRY=true vite build"
   },
   "devDependencies": {
     "vite-plugin-sitemap": "0.7.1"

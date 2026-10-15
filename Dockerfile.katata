@@ -1,0 +1,18 @@
+FROM node:24-bookworm-slim AS build
+WORKDIR /app
+COPY . .
+RUN yarn install --frozen-lockfile --non-interactive
+RUN yarn katata:build
+
+FROM node:24-bookworm-slim AS runtime
+WORKDIR /app
+ENV NODE_ENV=production PORT=3001
+COPY katata-server/package.json ./package.json
+COPY --from=build /app/yarn.lock ./yarn.lock
+RUN yarn install --production --frozen-lockfile --non-interactive --ignore-scripts && yarn cache clean
+COPY --from=build /app/katata-server/src ./katata-server/src
+COPY --from=build /app/excalidraw-app/build ./excalidraw-app/build
+USER node
+EXPOSE 3001
+HEALTHCHECK --interval=15s --timeout=5s --start-period=60s CMD node -e "fetch('http://127.0.0.1:3001/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+CMD ["node", "katata-server/src/index.mjs"]

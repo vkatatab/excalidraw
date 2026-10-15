@@ -1,4 +1,5 @@
 import path from "path";
+import { readFileSync } from "node:fs";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import svgrPlugin from "vite-plugin-svgr";
@@ -17,6 +18,7 @@ export default defineConfig(({ mode }) => {
       port: Number(envVars.VITE_APP_PORT || 3000),
       // open the browser
       open: true,
+      proxy: { "/api": "http://127.0.0.1:3001" },
     },
     // We need to specify the envDir since now there are no
     //more located in parallel with the vite.config.ts file but in parent dir
@@ -132,6 +134,14 @@ export default defineConfig(({ mode }) => {
       assetsInlineLimit: 0,
     },
     plugins: [
+      envVars.VITE_APP_KATATA === "true" && {
+        name: "katata-html",
+        transformIndexHtml: {
+          order: "pre",
+          handler: () =>
+            readFileSync(path.resolve(__dirname, "katata/index.html"), "utf8"),
+        },
+      },
       Sitemap({
         hostname: "https://excalidraw.com",
         outDir: "build",
